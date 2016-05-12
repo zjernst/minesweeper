@@ -14,11 +14,17 @@ class Board
     end
   end
 
-  def populate_mines(diff = 15)
+  def [](pos)
+    x,y = pos
+    grid[x][y]
+  end
+
+  def populate_bombs(diff = 15)
     tile_mines = @grid.flatten.sample(diff)
     tile_mines.each do |tile|
       tile.bomb = true
     end
+    set_adjacent_bombs
   end
 
   def render
@@ -32,6 +38,45 @@ class Board
     end
   end
 
-  def reveal
+  def set_adjacent_bombs
+    @grid.each_with_index do |row,row_index|
+      row.each_with_index do |tile, column_index|
+        @grid[row_index + 1 ,column_index]
+
+      end
+    end
+
+
+  end
+
+  def add_coords(delta, pos)
+    [x, y] = [delta[0] + pos[0], delta[1] + pos[1]]
+  end
+
+  def adjacent_tiles(position)
+    x,y = position
+    relatives = []
+
+    deltas = [1,0,-1].permutation(2).to_a
+    deltas << [-1,-1]
+    deltas << [1,1]
+
+    deltas.each do |delta|
+      relatives << add_coords(delta, pos)
+    end
+
+    relatives.reject do |x, y|
+      x < 0 || y <0
+    end
+
+  end
+
+  def reveal(pos)
+    tile = self[pos]
+    tile.bomb?
+  end
+
+  def flag(pos)
+    self[pos].flag = true
   end
 end
