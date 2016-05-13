@@ -1,12 +1,17 @@
+require_relative 'board'
+require 'byebug'
+
 class Minesweeper
   attr_accessor :board
 
   def initialize()
     @board = Board.new
+    @playing = true
   end
 
   def run
-    play_round until game_over?
+    @board.populate_bombs
+    play_round while @playing
   end
 
   def get_input
@@ -14,8 +19,9 @@ class Minesweeper
     tile = parse_input(gets.chomp)
   end
 
-  def game_over?
-    !game_over
+  def game_over
+    puts "Game over!"
+    @playing = false
   end
 
   def flag_or_reveal(pos)
@@ -25,8 +31,7 @@ class Minesweeper
       @board.flag(pos)
     elsif input == "r"
       if @board.is_bomb?(pos)
-        puts "Game over!"
-        break
+        game_over
       else
         @board.reveal(pos)
       end
@@ -41,6 +46,7 @@ class Minesweeper
   end
 
   def play_round
+    @board.render
     flag_or_reveal(get_input)
   end
 
