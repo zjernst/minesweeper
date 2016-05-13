@@ -32,7 +32,11 @@ class Board
     @grid.each_with_index do |row, index|
       print index
       row.each do |tile|
-        print " #{tile.adjacent_bombs}"
+        if tile.revealed
+          print " #{tile.adjacent_bombs}"
+        else
+          print " *"
+        end
       end
       puts " "
     end
@@ -81,6 +85,14 @@ class Board
   end
 
   def reveal(pos)
+    self[pos].revealed = true
+    if self[pos].adjacent_bombs == 0
+      neighbors = adjacent_tiles(pos)
+      #byebug
+      neighbors.each do |neighbor|
+        reveal(neighbor) if !self[neighbor].revealed
+      end
+    end
   end
 
   def flag(pos)

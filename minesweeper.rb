@@ -14,6 +14,10 @@ class Minesweeper
     tile = parse_input(gets.chomp)
   end
 
+  def game_over?
+    !game_over
+  end
+
   def flag_or_reveal(pos)
     puts "Would you like to flag or reveal this tile (f or r)"
     input = gets.chomp
@@ -37,8 +41,10 @@ class Minesweeper
   end
 
   def play_round
-    puts
-
+    flag_or_reveal(get_input)
   end
 
 end
+
+game = Minesweeper.new
+game.run
