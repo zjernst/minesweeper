@@ -20,7 +20,12 @@ class Minesweeper
     if input == "f"
       @board.flag(pos)
     elsif input == "r"
-      @board.reveal(pos)
+      if @board.is_bomb?(pos)
+        puts "Game over!"
+        break
+      else
+        @board.reveal(pos)
+      end
     else
       puts "Invalid input"
       flag_or_reveal

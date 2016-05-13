@@ -19,7 +19,7 @@ class Board
     grid[x][y]
   end
 
-  def populate_bombs(diff = 15)
+  def populate_bombs(diff = 10)
     tile_mines = @grid.flatten.sample(diff)
     tile_mines.each do |tile|
       tile.bomb = true
@@ -41,16 +41,19 @@ class Board
   def set_adjacent_bombs
     @grid.each_with_index do |row,row_index|
       row.each_with_index do |tile, column_index|
-        @grid[row_index + 1 ,column_index]
-
+        neighbors = adjacent_tiles([row_index, column_index])
+        bombs = 0
+        #byebug
+        neighbors.each do |neighbor|
+          bombs += 1 if self[neighbor].bomb?
+        end
+        tile.adjacent_bombs = bombs
       end
     end
-
-
   end
 
   def add_coords(delta, pos)
-    [x, y] = [delta[0] + pos[0], delta[1] + pos[1]]
+    [delta[0] + pos[0], delta[1] + pos[1]]
   end
 
   def adjacent_tiles(position)
@@ -62,18 +65,22 @@ class Board
     deltas << [1,1]
 
     deltas.each do |delta|
-      relatives << add_coords(delta, pos)
+      relatives << add_coords(delta, position)
     end
 
-    relatives.reject do |x, y|
-      x < 0 || y <0
+    relatives.reject! do |x, y|
+      (x < 0 || y < 0) || (x > 8 || y > 8)
     end
 
+    relatives
+  end
+
+  def is_bomb?(pos)
+    tile = self[pos]
+    tile.bomb?
   end
 
   def reveal(pos)
-    tile = self[pos]
-    tile.bomb?
   end
 
   def flag(pos)
